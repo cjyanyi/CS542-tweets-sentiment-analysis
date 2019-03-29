@@ -32,13 +32,16 @@ from keras.callbacks import ModelCheckpoint
 from utils import create_path
 from Attention import Attention
 
+from utils import texts_stat
+from params import params
+
 BASE_DIR = ''
 GLOVE_DIR = os.path.join(BASE_DIR, 'glove.6B')
-TEXT_DATA_DIR = os.path.join(BASE_DIR, 'enron')
-MAX_SEQUENCE_LENGTH = 300
-MAX_NUM_WORDS = 40000
-EMBEDDING_DIM = 200
-VALIDATION_SPLIT = 0.2
+#TEXT_DATA_DIR = os.path.join(BASE_DIR, 'enron')
+MAX_SEQUENCE_LENGTH = params['MAX_SEQUENCE_LENGTH']
+MAX_NUM_WORDS = params['MAX_NUM_WORDS']
+EMBEDDING_DIM = params['EMBEDDING_DIM']
+VALIDATION_SPLIT = params['VALIDATION_SPLIT']
 
 nb_filters = 256
 hiden_lstm_layer = 128
@@ -85,6 +88,9 @@ def train(texts,labels):
 
     word_index = tokenizer.word_index
     print('Found %s unique tokens.' % len(word_index))
+
+    ## save dict.json
+    texts_stat(texts,sequences,word_index)
 
     data = pad_sequences(sequences, maxlen=MAX_SEQUENCE_LENGTH)
 
@@ -133,7 +139,7 @@ def train(texts,labels):
     embedded_sequences = embedding_layer(sequence_input)
 
     # Hierarchical Attention Networks
-    x = Dropout(0.4)(embedded_sequences)
+    x = Dropout(0.2)(embedded_sequences)
     x = inception_block(x,nb_filters)
     x = MaxPooling1D(2)(x)
     x = Bidirectional(GRU(hiden_lstm_layer, dropout=0.2, recurrent_dropout=0.1, return_sequences=True))(x)
@@ -161,6 +167,13 @@ def train(texts,labels):
       callbacks = [checkpoint])
 
     #save the trained model
-    model.save('hierarchical_attention/lstm-attention-model.h5')
+    model.save('hierarchical_attention/'+params['MODEL_NAME'])
     #restore the model
     #keras.models.load_model(filepath)
+
+
+if __name__ == '__main__':
+    from text_to_np import read_data
+    x,y = read_data()
+    print(len(x))
+    train(x,y)
