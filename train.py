@@ -31,6 +31,7 @@ from keras.optimizers import RMSprop,SGD
 from keras.callbacks import ModelCheckpoint
 from utils import create_path
 from Attention import Attention
+from keras.applications import inception_v3
 
 from utils import texts_stat
 from params import params
@@ -60,7 +61,7 @@ def inception_block(input_tensor, output_size):
     x4 = Conv1D(con1d_filters, 1, activation="relu", padding='same')(input_tensor)
 
     mix0 = concatenate([x1, x2, x3, x4], name='mix0')
-    y = MaxPooling1D(4)(mix0)
+    y = MaxPooling1D(2)(mix0)
     y = BatchNormalization()(y)
 
     return y
@@ -141,10 +142,8 @@ def train(texts,labels):
     # Hierarchical Attention Networks
     x = Dropout(0.2)(embedded_sequences)
     x = inception_block(x,nb_filters)
-    x = MaxPooling1D(2)(x)
     x = Bidirectional(GRU(hiden_lstm_layer, dropout=0.2, recurrent_dropout=0.1, return_sequences=True))(x)
     x = Bidirectional(GRU(hiden_lstm_layer, dropout=0.2, recurrent_dropout=0.1, return_sequences=True))(x)
-    x = MaxPooling1D(2)(x)
     x = Attention()(x)
     x = Dropout(0.2)(x)
     preds = Dense(len(labels_index), activation='softmax')(x)
