@@ -29,9 +29,8 @@ from keras.layers import Conv1D, MaxPooling1D, Embedding, LSTM, Dropout, GRU
 from keras.models import Model
 from keras.optimizers import RMSprop,SGD
 from keras.callbacks import ModelCheckpoint
-from utils import create_path
+from utils import create_path, train_plot
 from Attention import Attention
-from keras.applications import inception_v3
 
 from utils import texts_stat
 from params import params
@@ -159,7 +158,7 @@ def train(texts,labels):
     #filepath='weights.{epoch:02d-{val_acc:.2f}}.hdf5'
     checkpoint = ModelCheckpoint(filepath='hierarchical_attention/weights.ep{epoch:02d}-acc{val_acc:.3f}.hdf5', monitor='val_acc', verbose=1, save_best_only=True)
 
-    model.fit(x_train, y_train,
+    history = model.fit(x_train, y_train,
       batch_size=128,
       epochs=50,
       validation_data=(x_val, y_val),
@@ -169,6 +168,7 @@ def train(texts,labels):
     model.save('hierarchical_attention/'+params['MODEL_NAME'])
     #restore the model
     #keras.models.load_model(filepath)
+    train_plot(history)
 
 
 if __name__ == '__main__':
