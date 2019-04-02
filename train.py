@@ -27,8 +27,8 @@ from keras.utils import to_categorical
 from keras.layers import Dense, Input, GlobalMaxPooling1D,Bidirectional, TimeDistributed, concatenate, BatchNormalization
 from keras.layers import Conv1D, MaxPooling1D, Embedding, LSTM, Dropout, GRU
 from keras.models import Model
-from keras.optimizers import RMSprop,SGD
-from keras.callbacks import ModelCheckpoint
+from keras.optimizers import RMSprop,SGD, Adam
+from keras.callbacks import ModelCheckpoint, ReduceLROnPlateau, EarlyStopping, CSVLogger
 from utils import create_path, train_plot
 from Attention import Attention
 
@@ -144,25 +144,28 @@ def train(texts,labels):
     x = Bidirectional(GRU(hiden_lstm_layer, dropout=0.2, recurrent_dropout=0.1, return_sequences=True))(x)
     x = Bidirectional(GRU(hiden_lstm_layer, dropout=0.2, recurrent_dropout=0.1, return_sequences=True))(x)
     x = Attention()(x)
-    x = Dropout(0.2)(x)
+    x = Dropout(0.4)(x)
     preds = Dense(len(labels_index), activation='softmax')(x)
     #rmsprop = RMSprop(lr=0.001)
 
     model = Model(sequence_input, preds)
     model.summary()
     model.compile(loss='categorical_crossentropy',
-          optimizer='adam',
+          optimizer=Adam(0.0001),
           metrics=['acc']
            )
     # save weights each epoch
     #filepath='weights.{epoch:02d-{val_acc:.2f}}.hdf5'
     checkpoint = ModelCheckpoint(filepath='hierarchical_attention/weights.ep{epoch:02d}-acc{val_acc:.3f}.hdf5', monitor='val_acc', verbose=1, save_best_only=True)
+    reduce_lr = ReduceLROnPlateau(monitor='val_loss', factor=0.4, patience=3, verbose=1)
+    early_stopping = EarlyStopping(monitor='val_loss', min_delta=0, patience=10, verbose=1)
+    csv_logger = CSVLogger('training_history.log', append=False)
 
     history = model.fit(x_train, y_train,
       batch_size=128,
       epochs=50,
       validation_data=(x_val, y_val),
-      callbacks = [checkpoint])
+      callbacks = [checkpoint,reduce_lr,early_stopping,csv_logger])
 
     #save the trained model
     model.save('hierarchical_attention/'+params['MODEL_NAME'])
