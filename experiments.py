@@ -22,7 +22,7 @@ def parse_preds(preds):
 texts = read_crawler_csv('')
 #%%
 ta = TweetsAnalysis()
-preds = ta.predict(texts[2])
+preds = ta.predict(texts[:,2])
 n,p,m = parse_preds(preds)
 total = n+p+m
 n/total
