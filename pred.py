@@ -8,6 +8,7 @@ import sys
 import numpy as np
 from keras.preprocessing.sequence import pad_sequences
 from keras.preprocessing.text import text_to_word_sequence
+from Attention import Attention
 
 from params import params
 from utils import load_dict,read_file
@@ -26,7 +27,7 @@ class TweetsAnalysis(object):
 
     def __init__(self, model_name=MODEL_NAME, test_dir='test_tweets'):
         try:
-            self.model = load_model(os.path.join(MODEL_DIR, model_name))
+            self.model = load_model(os.path.join(MODEL_DIR, model_name), custom_objects={'Attention': Attention})
             self.dict_w = load_dict(os.path.join(BASE_DIR, dict_name))
         except Exception as e:
             print(e.message)
@@ -130,6 +131,7 @@ class TweetsAnalysis(object):
 if __name__ == "__main__":
         ta = TweetsAnalysis()
         #texts = ta.load_test()
-        tests = ['I hate the rain']
+        #tests = ['I hate the rain']
+        tests = ['make America great again!', 'I hate the rain']
         predictions = ta.predict(tests)
         ta.decode_predictions(predictions)
