@@ -2,10 +2,10 @@
 
 from pred import TweetsAnalysis
 from numpy import genfromtxt
-import numpy as np
+import pandas as pd
 
 def read_crawler_csv(fname=''):
-    return genfromtxt(fname, delimiter=',', skip_header=0)
+    return pd.read_csv(fname)
 
 def parse_preds(preds):
     neg_n = pos_n = neut_n = 0
@@ -19,15 +19,22 @@ def parse_preds(preds):
     return neg_n,pos_n,neut_n
 
 #%%
-texts = read_crawler_csv('')
+pf = read_crawler_csv('tweeter_process.csv')
+texts = pf.iloc[:,2]
 #%%
 ta = TweetsAnalysis()
-preds = ta.predict(texts[:,2])
+preds = ta.predict(texts)
 n,p,m = parse_preds(preds)
 total = n+p+m
-n/total
-p/total
-m/total
+n/total,p/total,m/total
+#%%
+texts_11 = pf[pf.iloc[:,1]>'2018-11-01 00:00:00']
+texts_11 = texts_11[texts_11.iloc[:,1]<'2018-11-31 24:00:00'].iloc[:,2]
+preds = ta.predict(texts_11)
+n,p,m = parse_preds(preds)
+total = n+p+m
+n/total,p/total,m/total
+
 
 
 
