@@ -21,10 +21,10 @@ TextCNN: https://arxiv.org/abs/1408.5882
 TextRNN: https://www.ijcai.org/Proceedings/16/Papers/408.pdf   
 
 ### Step 3: Demonstration
-We will deploy our model as RESTful APIs, in order to make on-line prediction using the model we trained in Step2.
+We will deploy our model as RESTful APIs, in order to make on-line prediction using the model we trained in Step2.(TBD)
 
-### Run codes
-1: Create a folder 'dataset' under the same directory with 'CS542-tweets-sentiment-analysis'. Download the file 'training.1600000.processed.noemoticon.csv' from https://www.kaggle.com/kazanova/sentiment140 and put it in 'dataset'.   
+## Run codes
+1: Create a folder 'dataset' under the same directory with the repo 'CS542-tweets-sentiment-analysis'. Download the file 'training.1600000.processed.noemoticon.csv' from https://www.kaggle.com/kazanova/sentiment140 and put it in 'dataset'.   
 2: Create a folder 'glove.6B' under the project directory, and download 'glove.6B.200d.txt' from https://nlp.stanford.edu/projects/glove/ .   
-3: Run 'train.py' to train and save the model, after that run 'pred.py' to make prediction using the pre-trained model.
+3: Run 'train.py' to train and save the model, after that you can run 'pred.py' to make predictions using the pre-trained model.
 Run 'experiments.py' to reproduce the demo results. 
