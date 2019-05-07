@@ -19,7 +19,7 @@ def parse_preds(preds):
     return neg_n,pos_n,neut_n
 
 #%%
-pf = read_crawler_csv('tweeter_process.csv')
+pf = read_crawler_csv('./results/tweeter_process.csv')
 texts = pf.iloc[:,2]
 #%%
 ta = TweetsAnalysis()
